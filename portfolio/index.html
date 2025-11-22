@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syed Taneem Ahmed | The Web Designer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- IMPORTING FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700;900&family=Permanent+Marker&family=Poppins:wght@400;500;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        hero: ['"Bebas Neue"', 'sans-serif'],
+                        heading: ['"Montserrat"', 'sans-serif'],
+                        body: ['"Roboto"', 'sans-serif'],
+                        comic: ['"Permanent Marker"', 'cursive'],
+                        ui: ['"Poppins"', 'sans-serif'],
+                    },
+                    colors: {
+                        spidey: {
+                            red: '#E62429',    
+                            blue: '#0F52BA',   
+                            dark: '#0B1120',   
+                            web: '#cbd5e1',    
+                            accent: '#FCD34D'  
+                        }
+                    },
+                    boxShadow: {
+                        'neon-red': '0 0 20px rgba(230, 36, 41, 0.4)',
+                        'neon-blue': '0 0 20px rgba(15, 82, 186, 0.4)',
+                    },
+                    backgroundImage: {
+                        'hero-pattern': "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            background-color: #0B1120;
+            color: #ffffff;
+            font-family: "Roboto", sans-serif;
+        }
+        
+        .glass-nav {
+            background: rgba(11, 17, 32, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .iphone-frame {
+            border: 12px solid #1e293b;
+            border-radius: 2.5rem;
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+            background: #000;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            aspect-ratio: 9/19.5;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .iphone-frame:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 0 25px rgba(230, 36, 41, 0.5);
+            border-color: #2c3e50;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 25px;
+            width: 40%;
+            background: #1e293b;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            z-index: 20;
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- SPIDERMAN SCROLL ANIMATION --- */
+        #spidey-web {
+            position: fixed;
+            top: 0;
+            right: 10%; 
+            width: 2px;
+            background-color: rgba(255, 255, 255, 0.5);
+            z-index: 40;
+            pointer-events: none;
+            height: 0px; 
+            transition: height 0.1s linear;
+        }
+
+        #spidey-character {
+            position: fixed;
+            top: 0; 
+            right: calc(10% - 29px);
+            width: 60px;
+            height: 60px;
+            z-index: 41;
+            pointer-events: none;
+            transition: top 0.1s linear;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+        }
+
+        @keyframes swing {
+            0% { transform: rotate(175deg); }
+            50% { transform: rotate(185deg); }
+            100% { transform: rotate(175deg); }
+        }
+        
+        .swinging img {
+            animation: swing 3s ease-in-out infinite;
+            transform-origin: top center;
+        }
+        
+        ::selection {
+            background: #E62429;
+            color: white;
+        }
+        
+        /* Masking for smooth image blend */
+        .mask-image-gradient {
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
+    </style>
+</head>
+<body class="bg-spidey-dark text-white relative overflow-x-hidden selection:bg-spidey-red selection:text-white font-body">
+
+    <!-- SPIDERMAN ELEMENTS -->
+    <div id="spidey-web"></div>
+    <div id="spidey-character" class="swinging">
+        <img src="https://www.pngall.com/wp-content/uploads/2016/05/Spider-Man-PNG-File.png" 
+             alt="Spiderman" 
+             class="w-full h-full object-contain rotate-180">
+    </div>
+
+    <!-- Decorative Web SVGs -->
+    <svg class="absolute top-0 left-0 w-96 h-96 text-spidey-web opacity-10 pointer-events-none" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0 0 L200 200 M0 50 Q50 50 100 100 M0 100 Q100 100 200 200 M50 0 Q50 50 100 100 M100 0 Q100 100 200 200"/>
+        <path d="M20 0 L20 200 M50 0 L50 200 M100 0 L100 200" stroke-opacity="0.5"/>
+        <circle cx="0" cy="0" r="40"/>
+        <circle cx="0" cy="0" r="80"/>
+        <circle cx="0" cy="0" r="120"/>
+        <circle cx="0" cy="0" r="160"/>
+    </svg>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full top-0 z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <svg class="w-10 h-10 hover:rotate-12 transition-transform duration-300 drop-shadow-[0_0_8px_rgba(230,36,41,0.8)]" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="18" fill="#E62429" stroke="#0B1120" stroke-width="2"/>
+                        <path d="M20 8L22 14H18L20 8ZM20 8V32" stroke="#0B1120" stroke-width="2"/>
+                        <path d="M20 16L32 12 M20 16L8 12 M20 20L34 22 M20 20L6 22 M20 24L30 32 M20 24L10 32" stroke="#0B1120" stroke-width="1.5" stroke-linecap="round"/>
+                        <text x="50%" y="65%" text-anchor="middle" font-family="Bebas Neue" font-size="16" fill="white" stroke="#0B1120" stroke-width="0.5">ST</text>
+                    </svg>
+                    <span class="font-hero text-2xl tracking-wide text-white">Taneem<span class="text-spidey-red">.</span></span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8 font-ui">
+                    <a href="#about" class="text-sm font-medium text-gray-300 hover:text-spidey-red hover:shadow-neon-red transition-all">About</a>
+                    <a href="#portfolio" class="text-sm font-medium text-gray-300 hover:text-spidey-red hover:shadow-neon-red transition-all">Work</a>
+                    <a href="#skills" class="text-sm font-medium text-gray-300 hover:text-spidey-red hover:shadow-neon-red transition-all">Skills</a>
+                    <a href="#contact" class="bg-spidey-red text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-red-700 hover:shadow-neon-red transition-all transform hover:-translate-y-1">Contact Me</a>
+                </div>
+
+                <!-- Mobile button -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-white hover:text-spidey-red focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-spidey-dark border-b border-gray-800 absolute w-full font-ui">
+            <div class="px-4 pt-2 pb-6 space-y-1">
+                <a href="#about" class="block px-3 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md">About</a>
+                <a href="#portfolio" class="block px-3 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md">Work</a>
+                <a href="#skills" class="block px-3 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md">Skills</a>
+                <a href="#contact" class="block px-3 py-3 text-base font-bold text-spidey-red">Contact Me</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-visible">
+        <!-- Background Glow -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-spidey-blue opacity-20 blur-[120px] rounded-full pointer-events-none"></div>
+
+        <div class="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+            
+            <!-- LEFT COLUMN: TEXT CONTENT -->
+            <div class="fade-in-up text-center lg:text-left">
+                <div class="inline-flex items-center px-4 py-1.5 rounded-full border border-spidey-red/30 bg-spidey-red/10 mb-6 backdrop-blur-sm">
+                    <span class="flex h-2 w-2 rounded-full bg-spidey-red mr-2 animate-pulse shadow-neon-red"></span>
+                    <span class="font-ui text-xs font-semibold uppercase tracking-wider text-spidey-red">Available for Projects</span>
+                </div>
+                
+                <h1 class="font-hero text-6xl md:text-8xl tracking-wide leading-none mb-6">
+                    Hi, I'm <span class="text-white">Syed Taneem.</span><br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-spidey-red via-red-400 to-spidey-blue">Your Friendly Neighborhood</span> Designer.
+                </h1>
+                
+                <p class="font-body text-xl text-gray-400 max-w-lg mx-auto lg:mx-0 mb-10 leading-relaxed">
+                    I bridge the gap between <strong>intuitive design</strong> and <strong>digital growth</strong>. Like a web, I connect complex systems into seamless user experiences.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <a href="#portfolio" class="font-comic flex items-center justify-center px-8 py-4 text-lg rounded-sm text-white bg-spidey-blue hover:bg-blue-600 transition-all shadow-neon-blue border border-transparent hover:border-blue-400 transform -rotate-1 hover:rotate-0">
+                        View Case Studies
+                    </a>
+                    <a href="#contact" class="font-comic flex items-center justify-center px-8 py-4 text-lg rounded-sm text-white bg-transparent border-2 border-spidey-red hover:bg-spidey-red/10 transition-all hover:shadow-neon-red transform rotate-1 hover:rotate-0">
+                        Contact Me
+                    </a>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: INTERACTIVE HERO IMAGE -->
+            <div class="relative w-full max-w-md mx-auto aspect-square group cursor-pointer">
+                
+                <!-- Background Web (Rotating) -->
+                <svg class="absolute inset-0 w-full h-full text-gray-700 opacity-20 group-hover:opacity-40 group-hover:text-spidey-red transition-all duration-700 rotate-12 group-hover:rotate-45 scale-110" viewBox="0 0 200 200" fill="none" stroke="currentColor">
+                     <path d="M0 0 L200 200 M0 200 L200 0 M100 0 L100 200 M0 100 L200 100" stroke-width="0.5"/>
+                     <circle cx="100" cy="100" r="20" stroke-width="0.5"/>
+                     <circle cx="100" cy="100" r="40" stroke-width="0.5"/>
+                     <circle cx="100" cy="100" r="60" stroke-width="0.5"/>
+                     <circle cx="100" cy="100" r="80" stroke-width="0.5"/>
+                </svg>
+
+                <!-- Container for images -->
+                <div class="relative w-full h-full flex items-end justify-center">
+                    
+                    <!-- 1. CIVILIAN STATE (Your New Photo) -->
+                    <div class="absolute bottom-0 w-3/4 transition-all duration-500 ease-in-out group-hover:opacity-0 group-hover:scale-90 group-hover:blur-sm z-20">
+                        <div class="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full -z-10"></div>
+                        <img src="WhatsApp Image 2025-09-30 at 12.40.43 PM (6).jpg" 
+                             alt="Syed Taneem" 
+                             class="w-full h-auto object-contain drop-shadow-2xl mask-image-gradient"
+                             onerror="this.onerror=null; this.src='https://placehold.co/400x500/1e293b/475569?text=Syed+Civilian';">
+                    </div>
+
+                    <!-- 2. SPIDERMAN STATE (Placeholder for Edited Photo) -->
+                    <div class="absolute bottom-0 w-3/4 transition-all duration-300 ease-out opacity-0 group-hover:opacity-100 scale-110 translate-y-4 group-hover:translate-y-0 z-30">
+                        
+                        <!-- Spidey Sense Tingle -->
+                        <svg class="absolute -top-10 left-10 w-12 h-12 text-spidey-accent animate-ping" viewBox="0 0 24 24" fill="currentColor" style="animation-duration: 1s;">
+                            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" />
+                        </svg>
+                        <svg class="absolute -top-4 right-10 w-8 h-8 text-spidey-accent animate-ping" viewBox="0 0 24 24" fill="currentColor" style="animation-duration: 1.5s;">
+                            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" />
+                        </svg>
+
+                        <!-- THIS IS WHERE YOUR EDITED SPIDERMAN PHOTO GOES -->
+                        <!-- Save your edited photo as 'spidey-selfie.png' -->
+                        <img src="spidey-selfie.png" 
+                             alt="Spiderman Suit Up" 
+                             class="w-full h-auto object-contain drop-shadow-[0_0_25px_rgba(230,36,41,0.6)] mask-image-gradient"
+                             onerror="this.onerror=null; this.src='https://i.pinimg.com/736x/1a/0a/60/1a0a6042457d3b006093116671168547.jpg';"> <!-- Fallback to generic image -->
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-[#0F1623] relative border-y border-gray-800">
+        <svg class="absolute bottom-0 right-0 w-64 h-64 text-spidey-red opacity-10 pointer-events-none transform rotate-180" viewBox="0 0 200 200" fill="none" stroke="currentColor">
+            <path d="M0 0 L200 200 M0 100 Q100 100 200 200 M100 0 Q100 100 200 200"/>
+            <circle cx="200" cy="200" r="40"/>
+            <circle cx="200" cy="200" r="80"/>
+            <circle cx="200" cy="200" r="120"/>
+        </svg>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="relative group">
+                    <div class="aspect-square rounded-3xl overflow-hidden bg-gray-800 relative flex items-end justify-center border-4 border-gray-800 group-hover:border-spidey-red transition-colors duration-500 shadow-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-br from-spidey-blue/20 to-spidey-red/20"></div>
+                        
+                        <!-- Using the NEW photo here too -->
+                        <img src="WhatsApp Image 2025-09-30 at 12.40.43 PM (6).jpg" 
+                             alt="Syed Taneem Ahmed" 
+                             class="relative z-10 w-full h-full object-cover object-center transform scale-105 group-hover:scale-110 transition-transform duration-700"
+                             onerror="this.onerror=null; this.src='https://placehold.co/600x600/1e293b/475569?text=Insert+Image';">
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 bg-spidey-red p-6 rounded-2xl shadow-neon-red z-20 transform rotate-3 hover:rotate-0 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-spider text-white text-3xl"></i>
+                            <div class="text-white">
+                                <p class="font-hero text-2xl tracking-wide leading-none">Certified</p>
+                                <p class="font-ui text-xs font-medium opacity-90">UX Hero</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="font-heading text-spidey-blue font-bold tracking-wide uppercase text-sm mb-2">My Secret Identity</h2>
+                    <h3 class="font-hero text-5xl md:text-6xl mb-6">With great power comes great <span class="text-spidey-red">UX Design.</span></h3>
+                    
+                    <p class="font-body text-gray-400 text-lg leading-relaxed mb-6">
+                        I am a <strong>UI/UX Designer</strong> and <strong>Digital Media Specialist</strong> based in Noida. Currently battling bad UX at <strong>BhoomiTechzone Pvt. Ltd.</strong>, I specialize in transforming complex ideas into pixel-perfect interfaces.
+                    </p>
+                    <p class="font-body text-gray-400 text-lg leading-relaxed mb-8">
+                        Equipped with a BCA from Sharda University and a Google UX Certification, I sling code (HTML/CSS) and design (Figma) to save the web, one landing page at a time.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="flex items-start bg-gray-900/50 p-4 rounded-xl border border-gray-800 hover:border-spidey-blue transition-colors">
+                            <i class="fas fa-pen-nib text-spidey-blue mt-1 mr-3 text-xl"></i>
+                            <div>
+                                <h4 class="font-heading font-bold text-white">Design Systems</h4>
+                                <p class="font-ui text-sm text-gray-500">Figma & Adobe XD</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start bg-gray-900/50 p-4 rounded-xl border border-gray-800 hover:border-spidey-red transition-colors">
+                            <i class="fas fa-chart-line text-spidey-red mt-1 mr-3 text-xl"></i>
+                            <div>
+                                <h4 class="font-heading font-bold text-white">Growth Marketing</h4>
+                                <p class="font-ui text-sm text-gray-500">Meta Ads & Lead Gen</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+         <svg class="absolute top-20 left-10 w-32 h-32 text-gray-700 opacity-20 pointer-events-none" viewBox="0 0 100 100" fill="none" stroke="currentColor"><path d="M50 50 L0 0 M50 50 L100 0 M50 50 L50 0" stroke-width="0.5"/><circle cx="50" cy="50" r="10"/><circle cx="50" cy="50" r="30"/></svg>
+
+        <div class="text-center mb-16">
+            <h2 class="font-hero text-6xl md:text-7xl mb-4 tracking-wide">Mission Logs</h2>
+            <p class="font-body text-gray-400 max-w-2xl mx-auto">Recent missions completed. Click a device to analyze the data.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
+            
+            <!-- Project 1: Real Estate App -->
+            <div class="group relative w-full max-w-[280px]" onclick="openModal('realestate')">
+                <div class="iphone-frame">
+                    <div class="notch"></div>
+                    <img src="realestate.jpg" 
+                         alt="Real Estate App UI" 
+                         class="w-full h-full object-cover"
+                         onerror="this.onerror=null; this.src='https://placehold.co/390x844/1e293b/FFF?text=Real+Estate+UI';">
+                </div>
+                <div class="mt-6 text-center">
+                    <h3 class="font-heading font-bold text-lg text-white group-hover:text-spidey-red transition-colors">Real Estate App</h3>
+                    <p class="font-ui text-sm text-gray-500">Case Study</p>
+                </div>
+            </div>
+
+            <!-- Project 2: Fashion Store -->
+            <div class="group relative w-full max-w-[280px]" onclick="openModal('fashion')">
+                <div class="iphone-frame">
+                    <div class="notch"></div>
+                    <img src="fashion.jpg" 
+                         alt="Fashion Store UI" 
+                         class="w-full h-full object-cover"
+                         onerror="this.onerror=null; this.src='https://placehold.co/390x844/1e293b/FFF?text=Fashion+UI';">
+                </div>
+                <div class="mt-6 text-center">
+                    <h3 class="font-heading font-bold text-lg text-white group-hover:text-spidey-blue transition-colors">Fashion Store</h3>
+                    <p class="font-ui text-sm text-gray-500">App Redesign</p>
+                </div>
+            </div>
+
+            <!-- Project 3: Meta Ads -->
+            <div class="group relative w-full max-w-[280px]" onclick="openModal('marketing')">
+                <div class="iphone-frame">
+                    <div class="notch"></div>
+                    <img src="marketing.jpg" 
+                         alt="Meta Ads Campaign" 
+                         class="w-full h-full object-cover"
+                         onerror="this.onerror=null; this.src='https://placehold.co/390x844/1e293b/FFF?text=Marketing+Ads';">
+                </div>
+                <div class="mt-6 text-center">
+                    <h3 class="font-heading font-bold text-lg text-white group-hover:text-spidey-red transition-colors">Meta Ads</h3>
+                    <p class="font-ui text-sm text-gray-500">Lead Generation</p>
+                </div>
+            </div>
+
+            <!-- Project 4: Food Delivery -->
+            <div class="group relative w-full max-w-[280px]" onclick="openModal('food')">
+                <div class="iphone-frame">
+                    <div class="notch"></div>
+                    <img src="food.jpg" 
+                         alt="Food Delivery App UI" 
+                         class="w-full h-full object-cover"
+                         onerror="this.onerror=null; this.src='https://placehold.co/390x844/1e293b/FFF?text=Food+Delivery';">
+                </div>
+                <div class="mt-6 text-center">
+                    <h3 class="font-heading font-bold text-lg text-white group-hover:text-spidey-blue transition-colors">Foodie Express</h3>
+                    <p class="font-ui text-sm text-gray-500">Delivery App UI</p>
+                </div>
+            </div>
+
+            <!-- Project 5: Travel App -->
+            <div class="group relative w-full max-w-[280px]" onclick="openModal('travel')">
+                <div class="iphone-frame">
+                    <div class="notch"></div>
+                    <img src="travel.jpg" 
+                         alt="Travel Booking UI" 
+                         class="w-full h-full object-cover"
+                         onerror="this.onerror=null; this.src='https://placehold.co/390x844/1e293b/FFF?text=Travel+App';">
+                </div>
+                <div class="mt-6 text-center">
+                    <h3 class="font-heading font-bold text-lg text-white group-hover:text-spidey-red transition-colors">Wanderlust</h3>
+                    <p class="font-ui text-sm text-gray-500">Booking Dashboard</p>
+                </div>
+            </div>
+
+            <!-- Project 6: Professional Work -->
+            <div class="group relative w-full max-w-[280px]" onclick="openModal('professional')">
+                <div class="iphone-frame">
+                    <div class="notch"></div>
+                    <div class="h-full w-full bg-[#0B1120] flex flex-col relative overflow-hidden items-center justify-center">
+                        <div class="absolute inset-0 bg-hero-pattern opacity-10"></div>
+                        <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-spidey-blue to-spidey-red flex items-center justify-center text-white text-2xl font-bold shadow-neon-red mb-4 z-10 font-heading">
+                            B
+                        </div>
+                        <p class="text-white font-bold z-10 font-ui">BhoomiTech</p>
+                        <p class="text-gray-400 text-xs z-10 font-ui">UI/UX & Media</p>
+                    </div>
+                </div>
+                <div class="mt-6 text-center">
+                    <h3 class="font-heading font-bold text-lg text-white group-hover:text-spidey-blue transition-colors">BhoomiTechzone</h3>
+                    <p class="font-ui text-sm text-gray-500">Current Role</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Skills Section (RESTORED) -->
+    <section id="skills" class="py-20 bg-[#080C17] text-white relative overflow-hidden border-t border-gray-800">
+        <!-- Background Elements -->
+        <div class="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid md:grid-cols-2 gap-16">
+                
+                <!-- UI/UX Column -->
+                <div>
+                    <h3 class="font-hero text-4xl mb-8 flex items-center text-spidey-blue tracking-wide">
+                        <i class="fas fa-layer-group mr-3 text-2xl"></i> Design Stack
+                    </h3>
+                    <div class="space-y-6">
+                        <div class="group">
+                            <div class="flex justify-between mb-2 font-heading">
+                                <span class="font-bold text-gray-300">Figma & Prototyping</span>
+                                <span class="text-spidey-blue font-bold">95%</span>
+                            </div>
+                            <div class="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+                                <div class="h-full bg-spidey-blue w-[95%] rounded-full shadow-[0_0_10px_#0F52BA]"></div>
+                            </div>
+                        </div>
+                        <div class="group">
+                            <div class="flex justify-between mb-2 font-heading">
+                                <span class="font-bold text-gray-300">Adobe XD & Photoshop</span>
+                                <span class="text-spidey-blue font-bold">90%</span>
+                            </div>
+                            <div class="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+                                <div class="h-full bg-spidey-blue w-[90%] rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="group">
+                            <div class="flex justify-between mb-2 font-heading">
+                                <span class="font-bold text-gray-300">Illustrator & Canva</span>
+                                <span class="text-spidey-blue font-bold">85%</span>
+                            </div>
+                            <div class="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+                                <div class="h-full bg-spidey-blue w-[85%] rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marketing Column -->
+                <div>
+                    <h3 class="font-hero text-4xl mb-8 flex items-center text-spidey-red tracking-wide">
+                        <i class="fas fa-bullhorn mr-3 text-2xl"></i> Digital Marketing
+                    </h3>
+                    <div class="space-y-6">
+                        <div class="group">
+                            <div class="flex justify-between mb-2 font-heading">
+                                <span class="font-bold text-gray-300">Meta Ads (FB/Insta)</span>
+                                <span class="text-spidey-red font-bold">90%</span>
+                            </div>
+                            <div class="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+                                <div class="h-full bg-spidey-red w-[90%] rounded-full shadow-[0_0_10px_#E62429]"></div>
+                            </div>
+                        </div>
+                        <div class="group">
+                            <div class="flex justify-between mb-2 font-heading">
+                                <span class="font-bold text-gray-300">Lead Generation</span>
+                                <span class="text-spidey-red font-bold">85%</span>
+                            </div>
+                            <div class="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+                                <div class="h-full bg-spidey-red w-[85%] rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="group">
+                            <div class="flex justify-between mb-2 font-heading">
+                                <span class="font-bold text-gray-300">Content Strategy</span>
+                                <span class="text-spidey-red font-bold">85%</span>
+                            </div>
+                            <div class="h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+                                <div class="h-full bg-spidey-red w-[85%] rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section (RESTORED) -->
+    <section id="contact" class="py-24 max-w-3xl mx-auto px-4 sm:px-6 relative">
+        <div class="bg-[#0F1623] rounded-3xl border border-gray-700 p-8 md:p-12 relative overflow-hidden shadow-2xl">
+            <!-- Decorative Border Top -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-spidey-blue via-spidey-red to-spidey-blue"></div>
+            
+            <div class="text-center mb-10">
+                <h2 class="font-hero text-6xl mb-3 text-white">Assemble the Team?</h2>
+                <p class="font-body text-gray-400">Open for projects, collaborations, and saving the world.</p>
+                <p class="font-comic text-sm text-spidey-red mt-2 tracking-wider">Taneemahm321@gmail.com</p>
+            </div>
+
+            <form class="space-y-6" onsubmit="handleForm(event)">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-2 font-ui">Name</label>
+                        <input type="text" required class="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 focus:border-spidey-red focus:ring-1 focus:ring-spidey-red text-white transition-all placeholder-gray-600 font-body" placeholder="Peter Parker">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-2 font-ui">Email</label>
+                        <input type="email" required class="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 focus:border-spidey-blue focus:ring-1 focus:ring-spidey-blue text-white transition-all placeholder-gray-600 font-body" placeholder="peter@dailybugle.com">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-400 mb-2 font-ui">Message</label>
+                    <textarea rows="4" required class="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 focus:border-spidey-red focus:ring-1 focus:ring-spidey-red text-white transition-all placeholder-gray-600 font-body" placeholder="I have a project for you..."></textarea>
+                </div>
+                <button type="submit" class="font-comic w-full bg-gradient-to-r from-spidey-red to-red-600 text-white text-xl py-4 rounded-xl hover:shadow-neon-red transition-all duration-300 transform hover:-translate-y-1 tracking-wide uppercase">
+                    Send Message
+                </button>
+            </form>
+
+            <div class="mt-10 flex justify-center space-x-8">
+                <a href="https://linkedin.com/in/syed-taneem-9436a52b6" target="_blank" class="text-gray-500 hover:text-spidey-blue transition-colors text-2xl hover:scale-110 transform"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:Taneemahm321@gmail.com" class="text-gray-500 hover:text-spidey-red transition-colors text-2xl hover:scale-110 transform"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (RESTORED) -->
+    <footer class="py-8 text-center text-gray-500 text-sm border-t border-gray-800 bg-[#080C17] font-body">
+        <p>&copy; 2025 Syed Taneem Ahmed. Crafted with <i class="fas fa-heart text-spidey-red mx-1"></i> and Web Fluid.</p>
+    </footer>
+
+    <!-- Project Modal -->
+    <div id="projectModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-black/90 transition-opacity backdrop-blur-sm" onclick="closeModal()"></div>
+
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-2xl bg-[#0F1623] border border-gray-700 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                    <div class="h-2 w-full bg-spidey-red"></div>
+                    
+                    <div class="px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                                <h3 class="font-hero text-4xl leading-6 text-white mb-2" id="modal-title">Project Title</h3>
+                                <div class="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider bg-spidey-blue/20 text-spidey-blue rounded border border-spidey-blue/30 mb-4 font-ui" id="modal-tags">UI/UX</div>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-300 leading-relaxed font-body" id="modal-desc">
+                                        Project description goes here.
+                                    </p>
+                                </div>
+                                <div class="mt-6 bg-gray-900 p-4 rounded-lg border border-gray-800">
+                                    <h4 class="font-heading font-bold text-sm text-spidey-red mb-2 uppercase">Key Achievements</h4>
+                                    <ul class="text-sm text-gray-400 list-disc pl-5 space-y-1 font-body" id="modal-results">
+                                        <li>Result 1</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-900/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-800">
+                        <button type="button" class="font-comic inline-flex w-full justify-center rounded-lg bg-spidey-red px-4 py-2 text-sm text-white shadow-sm hover:bg-red-600 sm:ml-3 sm:w-auto" onclick="closeModal()">Close Mission</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-spidey-blue text-white px-6 py-3 rounded-lg shadow-neon-blue transform translate-y-20 opacity-0 transition-all duration-300 z-[110] flex items-center gap-3 border border-blue-400 font-ui">
+        <i class="fas fa-spider text-white"></i>
+        <span class="font-bold">Message sent to HQ!</span>
+    </div>
+
+    <script>
+        const projects = {
+            'realestate': {
+                title: "Real Estate Mobile App",
+                tag: "UI/UX Case Study",
+                desc: "Designed complete user flows including Property Listing, Filters, Booking, Wishlists, and Chat Support. Created high-fidelity UI screens and an interactive prototype in Figma.",
+                results: [
+                    "Conducted user research & personas",
+                    "Designed high-fidelity screens in Figma",
+                    "Reduced task time via usability testing"
+                ]
+            },
+            'fashion': {
+                title: "Fashion Store Redesign",
+                tag: "E-commerce & Design System",
+                desc: "A comprehensive redesign focusing on UI consistency, color harmony, and accessibility. Redesigned the product card layout and cart experience for a mobile-first approach.",
+                results: [
+                    "Improved visual consistency",
+                    "Delivered responsive design system",
+                    "Optimized cart & search interface"
+                ]
+            },
+            'marketing': {
+                title: "Meta Ads Campaigns",
+                tag: "Digital Marketing & Lead Gen",
+                desc: "Managed strategic ad campaigns for lead generation and conversions. Designed creative assets (banners, posters) and landing pages to optimize user journeys.",
+                results: [
+                    "Managed high-converting ad campaigns",
+                    "Designed CTA-based landing pages",
+                    "Increased engagement via content planning"
+                ]
+            },
+            'food': {
+                title: "Foodie Express Delivery",
+                tag: "App UI/UX",
+                desc: "Designed a high-speed food delivery interface focusing on quick checkout and visual menus. Created custom iconography and a dark mode version.",
+                results: [
+                    "Streamlined order flow to 3 taps",
+                    "Designed 25+ custom food icons",
+                    "Created comprehensive dark mode UI"
+                ]
+            },
+            'travel': {
+                title: "Wanderlust Booking",
+                tag: "Dashboard UI",
+                desc: "A travel booking dashboard concept for mobile. Focus was on organizing complex flight and hotel data into a clean, card-based layout.",
+                results: [
+                    "Simplified complex filtering logic",
+                    "Used card-based hierarchy for clarity",
+                    "Prototyped smooth transitions in Figma"
+                ]
+            },
+            'professional': {
+                title: "BhoomiTechzone Pvt. Ltd.",
+                tag: "Professional Experience",
+                desc: "Currently serving as UI/UX Developer & Digital Media Specialist. I bridge the gap between design and code while managing the company's digital presence.",
+                results: [
+                    "Designing modern app/web interfaces",
+                    "Building structured design systems",
+                    "Pixel-perfect developer handoff"
+                ]
+            }
+        };
+
+        function openModal(projectId) {
+            const project = projects[projectId];
+            document.getElementById('modal-title').innerText = project.title;
+            document.getElementById('modal-tags').innerText = project.tag;
+            document.getElementById('modal-desc').innerText = project.desc;
+            
+            const resultsList = document.getElementById('modal-results');
+            resultsList.innerHTML = '';
+            project.results.forEach(res => {
+                const li = document.createElement('li');
+                li.innerText = res;
+                resultsList.appendChild(li);
+            });
+
+            const modal = document.getElementById('projectModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('div[class*="transform"]').classList.add('scale-100');
+                modal.querySelector('div[class*="transform"]').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('projectModal');
+            modal.classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function handleForm(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            
+            btn.innerText = 'SENDING...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+                e.target.reset();
+                showToast();
+            }, 1500);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 10) {
+                nav.classList.add('shadow-md');
+                nav.classList.add('border-b');
+                nav.classList.add('border-gray-800');
+            } else {
+                nav.classList.remove('shadow-md');
+            }
+        });
+
+        function updateSpiderman() {
+            const scrollY = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = scrollY / docHeight;
+            const maxDrop = window.innerHeight * 0.8; 
+            const currentDrop = scrollPercent * maxDrop;
+            
+            const webLine = document.getElementById('spidey-web');
+            const character = document.getElementById('spidey-character');
+            
+            const baseWebLength = 60; 
+            
+            if (webLine && character) {
+                const newHeight = baseWebLength + currentDrop;
+                webLine.style.height = `${newHeight}px`;
+                character.style.top = `${newHeight}px`;
+            }
+        }
+
+        window.addEventListener('scroll', updateSpiderman);
+        window.addEventListener('load', updateSpiderman);
+
+    </script>
+</body>
+</html>
