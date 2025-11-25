@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMIYA ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Indie+Flower&family=Patrick+Hand&family=Permanent+Marker&family=Rock+Salt&display=swap" rel="stylesheet">
+    <style>
+        /* CORE CHAOS STYLES */
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: #fffafa;
+            overflow-x: hidden;
+            /* Custom Cursor */
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="red" stroke="white" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') 12 12, auto;
+            background-image: radial-gradient(#ff0000 1px, transparent 1px);
+            background-size: 40px 40px;
+            transition: filter 0.5s, transform 1s;
+        }
+
+        h1, h2, h3 { font-family: 'Permanent Marker', cursive; }
+        p { font-family: 'Indie Flower', cursive; font-weight: bold; }
+
+        /* Draggable Polaroids */
+        .draggable-polaroid {
+            position: absolute;
+            background: white;
+            padding: 10px 10px 30px 10px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+            cursor: grab;
+            transition: transform 0.1s, z-index 0s;
+            transform: rotate(var(--rot));
+        }
+        .draggable-polaroid:active {
+            cursor: grabbing;
+            transform: scale(1.05) rotate(0deg) !important;
+            z-index: 999 !important;
+        }
+
+        /* Stickers */
+        .sticker {
+            position: absolute;
+            pointer-events: none;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 0;
+        }
+        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1) rotate(var(--rot)); } }
+
+        /* Shake Animation */
+        .shake-crazy:hover { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0) rotate(1deg); } 20%, 80% { transform: translate3d(2px, 0, 0) rotate(-1deg); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0) rotate(2deg); } 40%, 60% { transform: translate3d(4px, 0, 0) rotate(-2deg); } }
+
+        /* Tape */
+        .tape-strip {
+            position: absolute;
+            height: 30px;
+            width: 100px;
+            background-color: rgba(255, 255, 230, 0.7);
+            border-left: 2px dashed rgba(0,0,0,0.1);
+            border-right: 2px dashed rgba(0,0,0,0.1);
+            transform: rotate(var(--rot));
+            top: -10px;
+            left: 30%;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            backdrop-filter: blur(1px);
+        }
+
+        /* Glitch text for title */
+        .glitch-hover:hover {
+            text-shadow: 3px 3px 0px #ff0000, -3px -3px 0px #0000ff;
+        }
+        
+        /* Effect Classes */
+        .earthquake { animation: earthquake 0.5s infinite; }
+        @keyframes earthquake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
+        
+        .invert-mode { filter: invert(100%); }
+        .spin-mode { transform: rotate(360deg) scale(0.8); }
+        .blur-mode { filter: blur(4px) contrast(200%); }
+
+        /* Sorry Text Font */
+        .sorry-font { font-family: 'Rock Salt', cursive; }
+    </style>
+</head>
+<body class="relative min-h-screen transition-all duration-700" id="body-main">
+
+    <!-- FLOATING UI: Secret Button -->
+    <div class="fixed top-5 right-5 z-50">
+        <button id="chaos-btn" onclick="triggerRandomSurprise()" class="bg-black text-white px-4 py-2 font-bold transform rotate-6 hover:rotate-0 transition border-2 border-red-500 shadow-[5px_5px_0px_0px_#ff0000] hover:scale-110 active:scale-95">
+            DO NOT CLICK 🚫
+        </button>
+    </div>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <div id="main-content" class="relative">
+
+        <!-- SECTION 1: HERO (With Cutouts) -->
+        <section class="h-screen relative flex items-center justify-center overflow-hidden">
+            <!-- Cutout Left -->
+            <div class="hidden lg:block absolute left-[5%] bottom-0 h-4/5 w-1/4 z-10 pointer-events-none">
+                <!-- CHANGE_ME: PUT HER LEFT CUTOUT PHOTO (NO BACKGROUND) BELOW -->
+                <img src="IMG_8509.PNG" class="w-full h-full object-contain transform -rotate-6 drop-shadow-2xl opacity-90">
+            </div>
+            <!-- Cutout Right -->
+            <div class="hidden lg:block absolute right-[5%] bottom-0 h-4/5 w-1/4 z-10 pointer-events-none">
+                <!-- CHANGE_ME: PUT HER RIGHT CUTOUT PHOTO (NO BACKGROUND) BELOW -->
+                <img src="IMG_8511.PNG" class="w-full h-full object-contain transform rotate-6 drop-shadow-2xl opacity-90">
+            </div>
+
+            <!-- Central Title Chaos -->
+            <div class="relative z-20 text-center select-none">
+                <div class="absolute -top-20 -left-20 transform -rotate-12">
+                    <span class="text-4xl font-bold bg-yellow-200 px-4 py-2 border-2 border-black shadow-lg">SHE'S HERE!</span>
+                </div>
+                
+                <h1 class="text-[8rem] md:text-[12rem] leading-none text-red-600 drop-shadow-[10px_10px_0px_rgba(0,0,0,1)] glitch-hover cursor-crosshair">
+                    SAMIYA
+                </h1>
+                
+                <div class="bg-white p-4 rotate-3 border-4 border-black inline-block mt-8 shadow-[8px_8px_0px_0px_#ff0000]">
+                    <p class="text-3xl md:text-5xl text-black">⚠️ WARNING: EXCESSIVE SLAY</p>
+                </div>
+
+                <div class="absolute -bottom-32 left-1/2 transform -translate-x-1/2 w-64 text-center">
+                    <p class="text-xl animate-bounce">↓ SCROLL TO WITNESS ↓</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 2: THE "WALL" (Scattered Text) -->
+        <section class="min-h-[80vh] relative py-20 overflow-hidden bg-yellow-50">
+            <!-- Background Doodles (SVG) -->
+            <svg class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 50 Q 100 150 200 100 T 400 200" stroke="red" fill="none" stroke-width="5"/>
+                <circle cx="80%" cy="20%" r="50" stroke="black" fill="none" stroke-width="3" stroke-dasharray="10,5"/>
+                <path d="M10 800 Q 500 900 900 800" stroke="blue" fill="none" stroke-width="4"/>
+            </svg>
+
+            <div class="max-w-4xl mx-auto relative h-[600px]">
+                <!-- Absolutely positioned chaos text -->
+                <div class="absolute top-10 left-10 md:left-20 bg-white p-6 shadow-xl transform -rotate-3 border-2 border-black w-64 z-20 shake-crazy">
+                    <div class="tape-strip" style="--rot: -2deg"></div>
+                    <p class="text-4xl text-red-600">Literally<br>INSANE 🤪</p>
+                    <p class="text-lg text-gray-500 mt-2">(In the best way)</p>
+                </div>
+
+                <div class="absolute bottom-20 right-10 md:right-32 bg-black text-white p-8 transform rotate-6 border-4 border-red-500 z-20 hover:scale-110 transition">
+                    <div class="tape-strip" style="--rot: 4deg; background: rgba(255,0,0,0.5);"></div>
+                    <p class="text-3xl">Outfit?<br>ALWAYS ON POINT.</p>
+                </div>
+
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center w-full">
+                    <h2 class="text-6xl md:text-9xl opacity-10 font-bold rotate-12 text-gray-400">QUEEN<br>BEHAVIOR</h2>
+                </div>
+
+                <!-- Floating Images -->
+                <div class="absolute top-20 right-10 w-48 md:w-64 transform rotate-12 z-10 border-8 border-white shadow-2xl">
+                    <!-- CHANGE_ME: PUT FLOATING PIC 1 BELOW -->
+                    <img src="IMG_4576.JPG" class="w-full grayscale hover:grayscale-0 transition">
+                </div>
+                
+                <div class="absolute bottom-10 left-10 w-56 transform -rotate-6 z-30 border-8 border-white shadow-2xl">
+                    <!-- CHANGE_ME: PUT FLOATING PIC 2 BELOW -->
+                    <img src="IMG_8524.PNG" class="w-full">
+                    <div class="absolute -bottom-6 -right-6 bg-red-600 text-white p-2 text-xl font-bold rotate-12">MUAH 💋</div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 3: INTERACTIVE CLOSET (Draggable Area) -->
+        <section class="min-h-screen bg-red-50 relative overflow-hidden py-10 border-t-4 border-black">
+            <div class="text-center mb-8 relative z-0">
+                <h2 class="text-6xl text-red-600 bg-white inline-block px-4 border-4 border-black transform -rotate-1">DRAG THESE PICS!</h2>
+                <p class="text-xl mt-2">Sort through the chaos (literally grab them)</p>
+            </div>
+
+            <!-- The Draggable Container -->
+            <div id="drag-zone" class="relative w-full h-[80vh]">
+                
+                <!-- Draggable Polaroid 1 -->
+                <div class="draggable-polaroid" style="top: 10%; left: 10%; --rot: -5deg;">
+                    <div class="tape-strip" style="--rot: 2deg"></div>
+                    <!-- CHANGE_ME: PUT DRAGGABLE PIC 1 BELOW -->
+                    <img src="IMG_7987.JPG" class="w-48 h-64 object-cover pointer-events-none">
+                    <p class="text-center mt-2 text-2xl">Drip 💧</p>
+                </div>
+
+                <!-- Draggable Polaroid 2 -->
+                <div class="draggable-polaroid" style="top: 20%; left: 50%; --rot: 10deg;">
+                     <div class="tape-strip" style="--rot: -3deg"></div>
+                    <!-- CHANGE_ME: PUT DRAGGABLE PIC 2 BELOW -->
+                    <img src="IMG_8509.PNG" class="w-48 h-64 object-cover pointer-events-none">
+                    <p class="text-center mt-2 text-2xl">Icon ✨</p>
+                </div>
+
+                <!-- Draggable Polaroid 3 -->
+                <div class="draggable-polaroid" style="top: 50%; left: 20%; --rot: -15deg;">
+                     <div class="tape-strip" style="--rot: 5deg"></div>
+                    <!-- CHANGE_ME: PUT DRAGGABLE PIC 3 BELOW -->
+                    <img src="IMG_9033.JPG" class="w-48 h-64 object-cover pointer-events-none">
+                    <p class="text-center mt-2 text-2xl">Vogue?</p>
+                </div>
+
+                <!-- Draggable Polaroid 4 -->
+                <div class="draggable-polaroid" style="top: 40%; left: 60%; --rot: 8deg;">
+                     <div class="tape-strip" style="--rot: 0deg"></div>
+                    <!-- CHANGE_ME: PUT DRAGGABLE PIC 4 BELOW -->
+                    <img src="IMG_9491.JPG" class="w-48 h-64 object-cover pointer-events-none">
+                    <p class="text-center mt-2 text-2xl">Cute 🥰</p>
+                </div>
+                 
+                 <div class="draggable-polaroid" style="top: 15%; left: 70%; --rot: 25deg; z-index: 5;">
+                     <div class="tape-strip" style="--rot: 90deg; left: -10px; top: 50%;"></div>
+                    <div class="bg-yellow-200 w-48 h-48 flex items-center justify-center p-4 text-center border-2 border-dashed border-black">
+                        <p class="text-3xl">"Too cool for this website"</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- SECTION 4: THE PHOTO DUMP -->
+        <section class="py-20 relative bg-white">
+            <h2 class="text-7xl text-center mb-10 relative z-50 pointer-events-none">
+                <span class="bg-black text-white px-6 transform rotate-2 inline-block">PHOTO</span>
+                <span class="bg-red-600 text-white px-6 transform -rotate-3 inline-block">DUMP</span>
+            </h2>
+
+            <div id="dump-container" class="relative w-full h-[100vh] overflow-hidden">
+                <!-- Javascript will throw images in here randomly -->
+            </div>
+        </section>
+
+
+        <!-- SECTION 4.5: THE VIDEO VAULT -->
+        <section class="py-24 relative bg-yellow-50 overflow-hidden border-t-4 border-black border-dashed">
+             <!-- Decorative Background Icons -->
+            <div class="absolute top-10 left-10 text-8xl rotate-12 opacity-10 select-none">🎥</div>
+            <div class="absolute bottom-10 right-10 text-8xl -rotate-12 opacity-10 select-none">🎬</div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[20rem] text-red-500 opacity-5 font-bold select-none">▶</div>
+
+            <div class="text-center mb-16 relative z-10">
+                <div class="inline-block transform -rotate-2">
+                    <h2 class="text-6xl md:text-8xl font-bold text-red-600 bg-white px-8 py-2 border-4 border-black shadow-[10px_10px_0px_black]">
+                        OUR MOVIE 🎬
+                    </h2>
+                </div>
+                <p class="text-2xl mt-6 font-bold transform rotate-1 font-['Indie_Flower']">
+                    (Press play on the madness)
+                </p>
+            </div>
+
+            <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                
+                <!-- Video 1: Landscape (YouTube Style) -->
+                <div class="relative group transform rotate-2 hover:rotate-0 transition duration-500">
+                    <div class="absolute -top-6 -left-6 z-30 transform -rotate-12 bg-yellow-400 text-black font-bold px-3 py-1 border-2 border-black shadow-md">
+                        WATCH THIS! 😂
+                    </div>
+                    
+                    <div class="bg-black p-2 pb-10 shadow-2xl border-4 border-gray-800 rounded-sm relative">
+                        <div class="relative w-full aspect-video bg-gray-900 overflow-hidden border border-gray-700">
+                            <!-- CHANGE_ME: PASTE YOUR LANDSCAPE VIDEO LINK BELOW -->
+                            <video class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition" controls poster="https://placehold.co/600x400/black/white?text=CHANGE_ME_VIDEO_1_COVER">
+                                <source src="CHANGE_ME_VIDEO_LINK.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <p class="text-gray-400 text-center mt-3 font-mono text-sm uppercase tracking-widest">Rec_001.mp4</p>
+                    </div>
+                    <div class="tape-strip" style="top: -20px; left: 50%; transform: translateX(-50%) rotate(-2deg); width: 150px;"></div>
+                </div>
+
+                <!-- Video 2: Portrait (TikTok/Reel Style) -->
+                 <div class="relative group transform -rotate-3 hover:rotate-0 transition duration-500 flex justify-center">
+                    
+                    <div class="bg-white p-4 pb-12 shadow-[15px_15px_0px_rgba(0,0,0,0.2)] border-4 border-black rotate-2 relative max-w-sm w-full">
+                        <div class="relative w-full aspect-[9/16] bg-black border-2 border-gray-200">
+                             <!-- CHANGE_ME: PASTE YOUR PORTRAIT VIDEO LINK BELOW -->
+                            <video class="w-full h-full object-cover" controls poster="https://placehold.co/300x530/pink/white?text=CHANGE_ME_VIDEO_2_COVER">
+                                <source src="CHANGE_ME_VIDEO_LINK_2.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        
+                        <div class="mt-4 text-center">
+                            <p class="text-3xl text-red-600 font-['Caveat'] font-bold">You are so cute fr ❤️</p>
+                            <p class="text-sm text-gray-500 font-bold">#mylove #chaos</p>
+                        </div>
+                    </div>
+                    <div class="tape-strip" style="top: -10px; right: 20%; transform: rotate(15deg);"></div>
+                    <div class="tape-strip" style="bottom: -10px; left: 20%; transform: rotate(-10deg);"></div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- SECTION 4.75: HER EYES (NEW BANNER STYLE) -->
+        <section class="py-24 bg-red-600 relative overflow-hidden border-t-4 border-black">
+            <!-- Hypnotic Background Pattern -->
+            <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle, white 2px, transparent 2.5px); background-size: 30px 30px;"></div>
+            
+            <div class="text-center relative z-10 mb-12">
+                <h2 class="text-7xl md:text-9xl text-white font-bold drop-shadow-[5px_5px_0px_black] transform -rotate-1">
+                    HER EYES 👀
+                </h2>
+                <div class="inline-block bg-black text-white px-4 py-2 mt-4 transform rotate-2 text-2xl font-bold border-2 border-white">
+                    ⚠️ CAUTION: HYPNOTIC HAZARD ⚠️
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-12 max-w-5xl mx-auto px-4 relative z-10">
+                
+                <!-- Eye Banner 1 -->
+                <div class="group relative transform -rotate-1 hover:rotate-0 transition duration-500">
+                    <div class="w-full h-64 md:h-80 border-8 border-white overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] bg-black relative">
+                        <!-- CHANGE_ME: WIDE EYE PHOTO 1 BELOW -->
+                        <img src="WhatsApp Image 2025-11-25 at 9.57.08 PM (1).jpeg" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-1000">
+                        <!-- Shine effect -->
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition duration-500 transform -translate-x-full group-hover:translate-x-full"></div>
+                    </div>
+                    <div class="absolute -bottom-6 right-10 bg-yellow-300 px-6 py-2 text-2xl font-bold border-4 border-black rotate-2 shadow-[5px_5px_0px_rgba(0,0,0,1)] z-20">
+                        Ocean Deep 🌊
+                    </div>
+                    <div class="tape-strip" style="top: -15px; left: 50%; transform: rotate(-2deg); width: 200px;"></div>
+                </div>
+
+                <!-- Eye Banner 2 -->
+                <div class="group relative transform rotate-1 hover:rotate-0 transition duration-500">
+                     <div class="w-full h-64 md:h-80 border-8 border-white overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] bg-black relative">
+                         <!-- CHANGE_ME: WIDE EYE PHOTO 2 BELOW -->
+                        <img src="WhatsApp Image 2025-11-25 at 9.57.08 PM (2).jpeg" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-1000">
+                    </div>
+                     <div class="absolute -top-6 left-10 bg-yellow-300 px-6 py-2 text-2xl font-bold border-4 border-black -rotate-2 shadow-[5px_5px_0px_rgba(0,0,0,1)] z-20">
+                        Literally Magic ✨
+                    </div>
+                     <div class="tape-strip" style="bottom: -15px; right: 20%; transform: rotate(2deg); width: 150px;"></div>
+                </div>
+
+                <!-- Eye Banner 3 -->
+                <div class="group relative transform -rotate-1 hover:rotate-0 transition duration-500">
+                     <div class="w-full h-64 md:h-80 border-8 border-white overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] bg-black relative">
+                         <!-- CHANGE_ME: WIDE EYE PHOTO 3 BELOW -->
+                        <img src="WhatsApp Image 2025-11-25 at 9.57.08 PM.jpeg" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-1000">
+                    </div>
+                    <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-yellow-300 px-6 py-2 text-2xl font-bold border-4 border-black rotate-1 shadow-[5px_5px_0px_rgba(0,0,0,1)] z-20">
+                         Hypnotic 😵‍💫
+                    </div>
+                    <div class="tape-strip" style="top: -15px; right: 10%; transform: rotate(5deg); width: 100px;"></div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- SECTION 5: I AM SORRY -->
+        <section class="py-32 bg-black relative text-center overflow-hidden border-t-8 border-white">
+            <div class="absolute inset-0 opacity-10" style="background-image: url('https://www.transparenttextures.com/patterns/black-felt.png');"></div>
+            
+            <div class="relative z-10 max-w-5xl mx-auto px-4">
+                <div class="transform -rotate-2">
+                     <h2 class="sorry-font text-[5rem] md:text-[10rem] text-white leading-none mb-4 shake-crazy inline-block">
+                        I AM <span class="text-red-600">SORRY</span>
+                    </h2>
+                </div>
+               
+                <div class="bg-white text-black p-6 md:p-10 transform rotate-1 inline-block shadow-[10px_10px_0px_white] max-w-2xl border-4 border-dashed border-black">
+                    <p class="text-2xl md:text-4xl font-bold handwritten leading-relaxed">
+                        Look, I know I'm annoying. <br>
+                        I know I messed up. <br>
+                        But... <br>
+                        <span class="text-red-600 underline decoration-wavy">I love youuuuuu</span> ❤️
+                    </p>
+                    <p class="text-sm mt-4 text-gray-500">(Please don't kill me)</p>
+                </div>
+
+                <div class="mt-16">
+                    <button onclick="forgiveMe()" class="bg-green-500 hover:bg-green-400 text-black text-3xl px-8 py-4 rounded-full font-bold border-4 border-white shadow-[0_0_20px_rgba(0,255,0,0.5)] transform hover:scale-110 transition animate-bounce">
+                        Okay, I Forgive You 🙄
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- FOOTER -->
+        <footer class="bg-gray-900 text-white py-12 text-center relative border-t border-gray-800">
+             <div class="relative z-10">
+                <p class="text-xl mb-4 text-gray-400">Website made with 100% Panic & Love</p>
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="text-lg underline decoration-wavy hover:text-red-500 transition">
+                    Back to Top ⬆️
+                </button>
+             </div>
+        </footer>
+
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- 1. RANDOM STICKER ON CLICK ---
+        const stickers = ['💋', '❤️', '🔥', '👑', '✨', '🤪', '😍', '🦋', '⭐', 'SAMIYA'];
+        const colors = ['#ff0000', '#ff1493', '#ffa500', '#ff69b4', '#000000'];
+
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button') || e.target.closest('.draggable-polaroid')) return;
+
+            const sticker = document.createElement('div');
+            sticker.classList.add('sticker');
+            sticker.innerText = stickers[Math.floor(Math.random() * stickers.length)];
+            sticker.style.left = (e.pageX - 20) + 'px';
+            sticker.style.top = (e.pageY - 20) + 'px';
+            sticker.style.color = colors[Math.floor(Math.random() * colors.length)];
+            sticker.style.fontSize = (Math.random() * 2 + 1.5) + 'rem';
+            sticker.style.setProperty('--rot', (Math.random() * 60 - 30) + 'deg');
+            
+            document.body.appendChild(sticker);
+            
+            const allStickers = document.querySelectorAll('.sticker');
+            if (allStickers.length > 50) allStickers[0].remove();
+        });
+
+
+        // --- 2. DRAGGABLE POLAROIDS ---
+        const draggables = document.querySelectorAll('.draggable-polaroid');
+        let zIndexCounter = 100;
+
+        draggables.forEach(elmnt => {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            elmnt.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                elmnt.style.zIndex = ++zIndexCounter;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        });
+
+
+        // --- 3. PHOTO DUMP GENERATOR ---
+        const dumpContainer = document.getElementById('dump-container');
+        
+        // CHANGE_ME: ADD YOUR PHOTO LINKS IN THE LIST BELOW!
+        const dumpImages = [
+            "IMG_8523.JPG",
+            "IMG_1408.JPG",
+            "IMG_2591.JPG",
+            "IMG_8524.JPG",
+            "IMG_8523.JPG",
+            "https://placehold.co/300x300/pink/white?text=SAMIYA",
+            "https://placehold.co/300x400/red/white?text=MY+LOVE", 
+            "https://placehold.co/300x300/yellow/black?text=MERA BACHAAA"
+        ];
+
+        function scatterPhotos() {
+            dumpImages.forEach((src, index) => {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'absolute bg-white p-2 shadow-lg hover:z-50 transition transform hover:scale-110';
+                
+                const randomLeft = Math.random() * 80 + 5;
+                const randomTop = Math.random() * 80 + 5;
+                const randomRot = Math.random() * 40 - 20;
+                
+                imgContainer.style.left = randomLeft + '%';
+                imgContainer.style.top = randomTop + '%';
+                imgContainer.style.transform = `rotate(${randomRot}deg)`;
+                imgContainer.style.width = (Math.random() * 100 + 150) + 'px';
+
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'w-full h-auto border border-gray-200';
+                
+                if(Math.random() > 0.5) {
+                    const tape = document.createElement('div');
+                    tape.className = 'tape-strip';
+                    tape.style.top = '-10px';
+                    tape.style.left = '30%';
+                    tape.style.transform = `rotate(${Math.random()*10 - 5}deg)`;
+                    imgContainer.appendChild(tape);
+                }
+
+                imgContainer.appendChild(img);
+                dumpContainer.appendChild(imgContainer);
+            });
+        }
+        scatterPhotos();
+
+
+        // --- 4. BUTTON ROULETTE (Random Surprises) ---
+        function triggerRandomSurprise() {
+            const effects = ['earthquake', 'invert', 'spin', 'rain', 'rain', 'rain']; 
+            const randomEffect = effects[Math.floor(Math.random() * effects.length)];
+            const body = document.getElementById('body-main');
+            const btn = document.getElementById('chaos-btn');
+
+            // Reset current effects
+            body.classList.remove('earthquake', 'invert-mode', 'spin-mode', 'blur-mode');
+            btn.innerText = "DO NOT CLICK 🚫";
+
+            if (randomEffect === 'earthquake') {
+                body.classList.add('earthquake');
+                btn.innerText = "EARTHQUAKE!!! 🌋";
+                setTimeout(() => body.classList.remove('earthquake'), 3000);
+            
+            } else if (randomEffect === 'invert') {
+                body.classList.add('invert-mode');
+                btn.innerText = "SPOOKY MODE 👻";
+                setTimeout(() => body.classList.remove('invert-mode'), 4000);
+            
+            } else if (randomEffect === 'spin') {
+                body.classList.add('spin-mode');
+                btn.innerText = "WHEEEEE! 🌀";
+                setTimeout(() => body.classList.remove('spin-mode'), 3000);
+
+            } else if (randomEffect === 'rain') {
+                // MASSIVE EMOJI RAIN
+                btn.innerText = "IT'S RAINING KISSES 💋";
+                for(let i=0; i<100; i++) {
+                    const emoji = document.createElement('div');
+                    emoji.innerText = ['💋', '❤️', '😍'][Math.floor(Math.random() * 3)];
+                    
+                    emoji.style.position = 'fixed';
+                    emoji.style.left = Math.random() * 100 + 'vw';
+                    emoji.style.top = '-50px';
+                    emoji.style.fontSize = Math.random() * 3 + 2 + 'rem';
+                    emoji.style.zIndex = 9999;
+                    emoji.style.pointerEvents = 'none';
+                    emoji.style.transition = `top ${Math.random() * 3 + 2}s ease-in, opacity 3s`;
+                    
+                    document.body.appendChild(emoji);
+
+                    setTimeout(() => {
+                        emoji.style.top = '110vh'; 
+                        emoji.style.opacity = '0';
+                    }, 100);
+
+                    setTimeout(() => emoji.remove(), 4000);
+                }
+            
+            } else if (randomEffect === 'alert') {
+                alert("WHY DID YOU CLICK?! I TOLD YOU NOT TO!");
+                body.classList.add('blur-mode');
+                setTimeout(() => body.classList.remove('blur-mode'), 2000);
+            }
+        }
+
+        // --- 5. FORGIVENESS BUTTON ---
+        function forgiveMe() {
+            confetti({
+                particleCount: 300,
+                spread: 180,
+                startVelocity: 60,
+                gravity: 0.5,
+                ticks: 300,
+                shapes: ['circle', 'heart'],
+                colors: ['#00ff00', '#ffffff', '#ff0000']
+            });
+            
+            alert("THANK YOUUUUU! YOU ARE THE BEST! ❤️❤️❤️");
+        }
+
+    </script>
+</body>
+</html>
